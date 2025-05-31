@@ -15,10 +15,14 @@ option = st.radio("Choose input method", ["📁 Upload Image", "📷 Live Camera
 def detect_and_display(image_np, original_image):
     results = model(image_np)
     image_with_boxes = image_np.copy()
+
     for result in results:
         boxes = result.boxes
         names = result.names
-        for box in boxes:
+        if boxes is not None and len(boxes) > 0:
+            # Find box with highest confidence
+            max_conf_idx = boxes.conf.argmax()
+            box = boxes[max_conf_idx]
             conf = box.conf[0].item()
             if conf >= 0.5:
                 xyxy = box.xyxy[0].cpu().numpy().astype(int)
