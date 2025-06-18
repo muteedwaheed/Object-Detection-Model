@@ -23,7 +23,7 @@ st.markdown("""
          background-attachment: fixed;
      }
      .navbar {
-         background-color: rgb(74 138 195 0.3);
+         background-color: rgb(74 138 195 0.2);
          overflow: hidden;
          padding: 10px 20px;
          display: flex;
