@@ -21,7 +21,7 @@ st.markdown("""
          background-attachment: fixed;
      }
      .navbar {
-         background-color: #333;
+         background-color: rgb(74 138 195 / 20%);
          overflow: hidden;
          padding: 10px 20px;
          display: flex;
