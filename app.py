@@ -3,6 +3,8 @@ from ultralytics import YOLO
 import numpy as np
 import cv2
 from PIL import Image
+import io
+import base64
 
 # Load the model
 model = YOLO("best.pt")
@@ -55,6 +57,13 @@ st.markdown("""
 st.sidebar.title("Select Input Method")
 option = st.sidebar.radio("Options", ["📁 Upload Image", "📷 Live Camera"])
 
+# Function to convert image to base64
+def get_image_base64(image):
+    buf = io.BytesIO()
+    Image.fromarray(image).save(buf, format="PNG")
+    byte_im = buf.getvalue()
+    return base64.b64encode(byte_im).decode()
+
 # Detection and display logic
 def detect_and_display(image_np, original_image):
     results = model(image_np)
@@ -85,11 +94,24 @@ def detect_and_display(image_np, original_image):
                             cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
 
     st.markdown("### 🖼 Detection Results")
-    col1, col2 = st.columns(2)
-    with col1:
-        st.image(original_image, caption="Original Image", width=400)
-    with col2:
-        st.image(image_with_boxes, caption="Detection Result", width=400)
+
+    # Encode both images as base64
+    original_b64 = get_image_base64(np.array(original_image))
+    detected_b64 = get_image_base64(image_with_boxes)
+
+    # Display in a responsive HTML row
+    st.markdown(f"""
+    <div style='display: flex; flex-direction: row; justify-content: space-around; flex-wrap: wrap; gap: 10px;'>
+        <div style='flex: 1; min-width: 140px; max-width: 45%;'>
+            <img src="data:image/png;base64,{original_b64}" style="width: 100%; border-radius: 10px;" />
+            <p style="text-align: center; color: white;">Original Image</p>
+        </div>
+        <div style='flex: 1; min-width: 140px; max-width: 45%;'>
+            <img src="data:image/png;base64,{detected_b64}" style="width: 100%; border-radius: 10px;" />
+            <p style="text-align: center; color: white;">Detection Result</p>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
 # Image Upload
 if option == "📁 Upload Image":
